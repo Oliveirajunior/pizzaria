@@ -1,4 +1,4 @@
-const { PizzaPedido } = require('../models')
+const { PizzaPedido, Pizza, Pedido, Cliente } = require('../models')
 
 module.exports = {
   async index(req, res) {
@@ -6,7 +6,16 @@ module.exports = {
       const pizzaPedidos = await PizzaPedido.findAll({
         order: [['id', 'ASC']],
         attributes: ['id', 'id_pedido', 'id_pizza', 'amount'],
-        include: { association: 'pizza', attributes: ['flavor', 'price'] }
+        include: [
+          /* { association: 'pizza', attributes: ['flavor', 'price'] },
+          { association: 'pedido', attributes: ['id_cliente', 'total'] } */
+          { model: Pizza, as: 'pizza' },
+          {
+            model: Pedido,
+            as: 'pedido',
+            include: [{ model: Cliente, as: 'cliente' }]
+          }
+        ]
       })
       return res.json(pizzaPedidos)
     } catch (err) {
@@ -18,7 +27,16 @@ module.exports = {
       const { id } = req.params
       const pizzaPedido = await PizzaPedido.findByPk(id, {
         attributes: ['id', 'id_pedido', 'id_pizza', 'amount'],
-        include: { association: 'pizza', attributes: ['flavor', 'price'] }
+        include: [
+          /* { association: 'pizza', attributes: ['flavor', 'price'] },
+          { association: 'pedido', attributes: ['id_cliente', 'total'] } */
+          { model: Pizza, as: 'pizza' },
+          {
+            model: Pedido,
+            as: 'pedido',
+            include: [{ model: Cliente, as: 'cliente' }]
+          }
+        ]
       })
       return res.json(pizzaPedido)
     } catch (err) {
@@ -30,11 +48,18 @@ module.exports = {
       const { id_pedido } = req.params
       const pizzaPedido = await PizzaPedido.findAll({
         where: { id_pedido },
+        order: [['id', 'ASC']],
         attributes: ['id', 'id_pedido', 'id_pizza', 'amount'],
-        include: {
-          association: 'pedido',
-          attributes: ['id_cliente', 'total']
-        }
+        include: [
+          /* { association: 'pizza', attributes: ['flavor', 'price'] },
+          { association: 'pedido', attributes: ['id_cliente', 'total'] } */
+          { model: Pizza, as: 'pizza' },
+          {
+            model: Pedido,
+            as: 'pedido',
+            include: [{ model: Cliente, as: 'cliente' }]
+          }
+        ]
       })
       return res.json(pizzaPedido)
     } catch (err) {
